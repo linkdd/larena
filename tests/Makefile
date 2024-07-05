@@ -1,6 +1,8 @@
 CC := gcc
-CFLAGS := -O2 -g -Wall -Werror -Wextra
-LDFLAGS :=
+CFLAGS := 																																		\
+	-O2 -g -DDEBUG=1 																														\
+	-Wall -Werror -Wextra 																											\
+	-fsanitize=undefined -fno-sanitize-recover=undefined
 
 
 .PHONY: all
