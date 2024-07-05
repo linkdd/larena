@@ -95,10 +95,10 @@ static void *stdlib_alloc(size_t size, void *ctx) {
   return malloc(size);
 }
 
-static void *stdlib_realloc(void *ptr, size_t old_size, size_t new_size, void *ctx) {
-  (void)old_size;
+static void *stdlib_realloc(void *ptr, size_t oldsz, size_t newsz, void *ctx) {
+  (void)oldsz;
   (void)ctx;
-  return realloc(ptr, new_size);
+  return realloc(ptr, newsz);
 }
 
 static void stdlib_dealloc(void *ptr, size_t size, void *ctx) {

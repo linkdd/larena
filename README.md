@@ -4,7 +4,7 @@
 ![license](https://img.shields.io/github/license/linkdd/larena?style=flat-square&color=blue)
 ![version](https://img.shields.io/github/v/release/linkdd/larena?style=flat-square&color=red)
 
-This project is a C/C++ header only library providing an Arena implementation.
+This project is a C11 header only library providing an Arena implementation.
 
 ## Installation
 
