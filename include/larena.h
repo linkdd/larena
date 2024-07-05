@@ -76,6 +76,7 @@ void *lobject_deref(const lobject *self);
 #ifdef LARENA_IMPLEMENTATION
 
 #include <assert.h>
+#include <stdalign.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -124,6 +125,8 @@ bool larena_alloc(larena *self, size_t size, lobject *obj) {
   assert(self->allocator != NULL);
   assert(obj != NULL);
   assert(size > 0);
+
+  size = align_size_forward(size, alignof(max_align_t));
 
   if (self->offset + size > self->capacity) {
     size_t allocsz = align_size_forward(
