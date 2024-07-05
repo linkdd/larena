@@ -26,6 +26,25 @@ UTEST(main, readme) {
   larena_free(&arena);
 }
 
+UTEST(main, zero_sized_alloc) {
+  lallocator allocator = {0};
+  lallocator_init_stdlib(&allocator);
+
+  larena arena = {0};
+  larena_init(&arena, &allocator);
+
+  lobject obj_a = {0};
+  lobject obj_b = {0};
+  lobject obj_c = {0};
+  ASSERT_TRUE(larena_alloc(&arena, sizeof(int), &obj_a));
+  ASSERT_TRUE(larena_alloc(&arena, 0, &obj_b));
+  ASSERT_TRUE(larena_alloc(&arena, sizeof(int), &obj_c));
+
+  EXPECT_EQ(obj_b.ptr, obj_c.ptr);
+
+  larena_free(&arena);
+}
+
 UTEST(ub, alignment) {
   lallocator allocator = {0};
   lallocator_init_stdlib(&allocator);
