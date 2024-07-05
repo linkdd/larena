@@ -1,6 +1,6 @@
 /*
  * larena.h - A simple arena allocator.
- * Version 0.5.0
+ * Version 0.6.0
  *
  * Copyright (c) 2024, David Delassus <david.jose.delassus@gmail.com>
  *

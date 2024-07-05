@@ -1,6 +1,6 @@
 {
   "name": "larena",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "scripts": {
     "build": "true",
     "install": "make install PREFIX=$SHIPP_DIST_PREFIX"
