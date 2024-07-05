@@ -128,7 +128,12 @@ bool larena_alloc(larena *self, size_t size, lobject *obj) {
   assert(self != NULL);
   assert(self->allocator != NULL);
   assert(obj != NULL);
-  assert(size > 0);
+
+  if (size == 0) {
+    obj->allocator = self;
+    obj->ptr       = self->offset;
+    return true;
+  }
 
   size = align_size_forward(size, alignof(max_align_t));
   if ((size == 0) || (self->offset > SIZE_MAX - size)) return false;
