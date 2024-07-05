@@ -63,7 +63,7 @@ struct lobject {
 void lallocator_init_stdlib(lallocator *self);
 
 void larena_init(larena *self, lallocator *allocator);
-bool larena_alloc(larena *self, size_t size, lobject *obj);
+int larena_alloc(larena *self, size_t size, lobject *obj);
 void larena_clear(larena *self);
 void larena_free(larena *self);
 
@@ -76,6 +76,7 @@ void *lobject_deref(const lobject *self);
 #ifdef LARENA_IMPLEMENTATION
 
 #include <assert.h>
+#include <errno.h>
 #include <stdalign.h>
 #include <stdlib.h>
 #include <string.h>
@@ -124,7 +125,7 @@ void larena_init(larena *self, lallocator *allocator) {
   self->data      = NULL;
 }
 
-bool larena_alloc(larena *self, size_t size, lobject *obj) {
+int larena_alloc(larena *self, size_t size, lobject *obj) {
   assert(self != NULL);
   assert(self->allocator != NULL);
   assert(obj != NULL);
@@ -132,11 +133,11 @@ bool larena_alloc(larena *self, size_t size, lobject *obj) {
   if (size == 0) {
     obj->allocator = self;
     obj->ptr       = self->offset;
-    return true;
+    return 0;
   }
 
   size = align_size_forward(size, alignof(max_align_t));
-  if ((size == 0) || (self->offset > SIZE_MAX - size)) return false;
+  if ((size == 0) || (self->offset > SIZE_MAX - size)) return EOVERFLOW;
 
   if (self->offset + size > self->capacity) {
     size_t allocsz = align_size_forward(
@@ -145,7 +146,7 @@ bool larena_alloc(larena *self, size_t size, lobject *obj) {
     );
 
     if (allocsz == 0) {
-      return false;
+      return EOVERFLOW;
     }
 
     void *newdata = self->allocator->realloc(
@@ -155,7 +156,7 @@ bool larena_alloc(larena *self, size_t size, lobject *obj) {
       self->allocator->ctx
     );
     if (newdata == NULL) {
-      return false;
+      return ENOMEM;
     }
 
     self->capacity += allocsz;
@@ -167,7 +168,7 @@ bool larena_alloc(larena *self, size_t size, lobject *obj) {
   obj->ptr       = self->offset;
   self->offset  += size;
 
-  return true;
+  return 0;
 }
 
 void larena_clear(larena *self) {

@@ -64,10 +64,20 @@ You can then allocate objects with your arena:
 ```c
 lobject myobj = {0};
 
-if (!larena_alloc(&myarena, sizeof(int), &myobj)) {
+if (larena_alloc(&myarena, sizeof(int), &myobj) != 0) {
   // allocation failed
 }
 ```
+
+The possible error codes are:
+
+| Code | Description |
+| --- | --- |
+| `0` | The allocation was successful |
+| `EOVERFLOW` | The size of the allocation would produce an integer overflow |
+| `ENOMEM` | The heap allocation, to extend the arena, failed |
+
+> **NB:** Error codes are found in the header `errno.h`
 
 An object is a simple structure containing a reference to the arena used to
 allocate said object, and a pointer relative to the base of the arena.

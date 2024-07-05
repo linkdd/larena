@@ -1,3 +1,5 @@
+#include <errno.h>
+
 #include "utest.h"
 
 #define LARENA_IMPLEMENTATION
@@ -13,15 +15,15 @@ UTEST(main, readme) {
   larena_init(&arena, &allocator);
 
   lobject obj = {0};
-  ASSERT_TRUE(larena_alloc(&arena, sizeof(int), &obj));
+  EXPECT_EQ(larena_alloc(&arena, sizeof(int), &obj), 0);
 
   int *ptr = (int *)lobject_deref(&obj);
   *ptr = 42;
 
   larena_clear(&arena);
 
-  ASSERT_TRUE(larena_alloc(&arena, sizeof(int), &obj));
-  EXPECT_EQ(0, *(int *)lobject_deref(&obj));
+  EXPECT_EQ(larena_alloc(&arena, sizeof(int), &obj), 0);
+  EXPECT_EQ(*(int *)lobject_deref(&obj), 0);
 
   larena_free(&arena);
 }
@@ -36,9 +38,9 @@ UTEST(main, zero_sized_alloc) {
   lobject obj_a = {0};
   lobject obj_b = {0};
   lobject obj_c = {0};
-  ASSERT_TRUE(larena_alloc(&arena, sizeof(int), &obj_a));
-  ASSERT_TRUE(larena_alloc(&arena, 0, &obj_b));
-  ASSERT_TRUE(larena_alloc(&arena, sizeof(int), &obj_c));
+  EXPECT_EQ(larena_alloc(&arena, sizeof(int), &obj_a), 0);
+  EXPECT_EQ(larena_alloc(&arena, 0, &obj_b), 0);
+  EXPECT_EQ(larena_alloc(&arena, sizeof(int), &obj_c), 0);
 
   EXPECT_EQ(obj_b.ptr, obj_c.ptr);
 
@@ -54,8 +56,8 @@ UTEST(ub, alignment) {
 
   lobject obj_a = {0};
   lobject obj_b = {0};
-  ASSERT_TRUE(larena_alloc(&arena, sizeof(short), &obj_a));
-  ASSERT_TRUE(larena_alloc(&arena, sizeof(int), &obj_b));
+  EXPECT_EQ(larena_alloc(&arena, sizeof(short), &obj_a), 0);
+  EXPECT_EQ(larena_alloc(&arena, sizeof(int), &obj_b), 0);
 
   short *ptr_a = (short *)lobject_deref(&obj_a);
   int *ptr_b   = (int *)lobject_deref(&obj_b);
@@ -74,7 +76,7 @@ UTEST(int_overflow, large_alloc) {
   larena_init(&arena, &allocator);
 
   lobject obj = {0};
-  ASSERT_FALSE(larena_alloc(&arena, SIZE_MAX - 100, &obj));
+  EXPECT_EQ(larena_alloc(&arena, SIZE_MAX - 100, &obj), EOVERFLOW);
 
   larena_free(&arena);
 }
