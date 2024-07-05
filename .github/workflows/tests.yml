@@ -1,0 +1,19 @@
+---
+name: tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout-scm
+        uses: actions/checkout@v4
+      - name: setup
+        run: sudo apt install gcc make
+      - name: test
+        run: make test
