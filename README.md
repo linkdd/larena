@@ -99,6 +99,24 @@ The **absolute** pointer will be resolved by summing the arena's base with the
 **relative** pointer contained in the object. This way, there is no pointer
 invalidation when `realloc` moves the memory.
 
+The library also provide a `calloc` interface to allocate multiple chunks of
+contiguous memory at once:
+
+```c
+lobject myobj = {0};
+
+if (larena_calloc(&myarena, 5, sizeof(int), &myobj) != 0) {
+  // allocation failed
+}
+
+int *array = lobject_deref(myobj);
+array[0] = 1;
+array[1] = 2;
+array[2] = 3;
+array[3] = 4;
+array[4] = 5;
+```
+
 Once you're done with your arena, you can free all the memory at once:
 
 ```c

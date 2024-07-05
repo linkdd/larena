@@ -25,6 +25,13 @@ UTEST(main, readme) {
   EXPECT_EQ(larena_alloc(&arena, sizeof(int), &obj), 0);
   EXPECT_EQ(*(int *)lobject_deref(&obj), 0);
 
+  lobject objs = {0};
+  EXPECT_EQ(larena_calloc(&arena, 2, sizeof(int), &objs), 0);
+
+  int *ptrs = (int *)lobject_deref(&objs);
+  ptrs[0] = 42;
+  ptrs[1] = 43;
+
   larena_free(&arena);
 }
 

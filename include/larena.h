@@ -64,6 +64,7 @@ void lallocator_init_stdlib(lallocator *self);
 
 void larena_init(larena *self, lallocator *allocator);
 int larena_alloc(larena *self, size_t size, lobject *obj);
+int larena_calloc(larena *self, size_t count, size_t size, lobject *obj);
 void larena_clear(larena *self);
 void larena_free(larena *self);
 
@@ -169,6 +170,11 @@ int larena_alloc(larena *self, size_t size, lobject *obj) {
   self->offset  += size;
 
   return 0;
+}
+
+int larena_calloc(larena *self, size_t count, size_t size, lobject *obj) {
+  if (count > 0 && size > SIZE_MAX / count) return EOVERFLOW;
+  return larena_alloc(self, count * size, obj);
 }
 
 void larena_clear(larena *self) {
