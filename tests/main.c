@@ -46,3 +46,16 @@ UTEST(ub, alignment) {
 
   larena_free(&arena);
 }
+
+UTEST(int_overflow, large_alloc) {
+  lallocator allocator = {0};
+  lallocator_init_stdlib(&allocator);
+
+  larena arena = {0};
+  larena_init(&arena, &allocator);
+
+  lobject obj = {0};
+  ASSERT_FALSE(larena_alloc(&arena, SIZE_MAX - 100, &obj));
+
+  larena_free(&arena);
+}
