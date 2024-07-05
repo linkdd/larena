@@ -81,7 +81,11 @@ void *lobject_deref(const lobject *self);
 #include <string.h>
 
 static inline size_t align_size_forward(size_t size, size_t alignment) {
-  return (size + alignment - 1) & ~(alignment - 1);
+  if (alignment == 0) return size;
+  size_t remainder = size % alignment;
+  if (remainder == 0) return size;
+  if (size > SIZE_MAX - (alignment - remainder)) return 0;
+  return size + alignment - remainder;
 }
 
 static void *stdlib_alloc(size_t size, void *ctx) {
@@ -127,12 +131,17 @@ bool larena_alloc(larena *self, size_t size, lobject *obj) {
   assert(size > 0);
 
   size = align_size_forward(size, alignof(max_align_t));
+  if ((size == 0) || (self->offset > SIZE_MAX - size)) return false;
 
   if (self->offset + size > self->capacity) {
     size_t allocsz = align_size_forward(
       (self->offset + size) - self->capacity,
       LARENA_ALIGNMENT
     );
+
+    if (allocsz == 0) {
+      return false;
+    }
 
     void *newdata = self->allocator->realloc(
       self->data,
